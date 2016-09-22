@@ -6,7 +6,7 @@
 /doc/
 /pkg/
 /spec/reports/
-/tmp/
-/log/
+tmp/
+log/
 voltron-*.gem
 *.bak
