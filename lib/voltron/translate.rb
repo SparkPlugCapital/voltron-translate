@@ -1,3 +1,4 @@
+require "voltron"
 require "voltron/translate/version"
 require "voltron/config/translate"
 require "digest"

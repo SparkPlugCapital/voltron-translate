@@ -1,3 +1,5 @@
+require "voltron"
+
 module Voltron
 	module Translate
 		class Railtie < Rails::Railtie
