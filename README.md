@@ -90,7 +90,7 @@ In a case like the above, "Goodbye World" will never be written to any locale fi
 
 Then consider changing your if condition to something a little less absurd so that code could be reached.
 
-# Choosing a translation locale
+## Choosing a translation locale
 
 By default, the file Voltron Translate will pull the translations from is determined by the value of `I18n.locale` If you set the value to `:de` it will look for translations in de.csv
 
