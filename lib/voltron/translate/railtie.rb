@@ -7,6 +7,7 @@ module Voltron
         ::ActionController::Base.send :include, ::Voltron::Translate
         ::ActiveRecord::Base.send :include, ::Voltron::Translate
         ::ActionView::Base.send :include, ::Voltron::Translate
+        ::ActionMailer::Base.send :include, ::Voltron::Translate
       end
     end
   end

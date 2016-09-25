@@ -26,7 +26,7 @@ Then run the following to create the voltron.rb initializer (if not exists alrea
 
 ## Usage
 
-Voltron Translate extends ActiveRecord::Base, ActionController::Base, and ActionView::Base with a __ (double underscore) method that makes internationalization and/or translating static phrases easier.
+Voltron Translate extends ActiveRecord::Base, ActionController::Base, ActionMailer::Base, and ActionView::Base with a __ (double underscore) method that makes internationalization and/or translating static phrases easier.
 
 Once installed, from any class that extends from any of the three rails classes you can use the double underscore method to allow for real time text translation. For example:
 
@@ -102,8 +102,14 @@ __("User with name %{person_name} has been saved successfully.", :de, person_nam
 
 Will always look for the above translation within de.csv
 
+## Things to Note
+
+Setting `Voltron.config.translate.enabled` to `false` will never break any __() call, it simply causes it to ignore the locale argument (if specified) and return the interpolated string using the latter arguments (again, if any)
+
+Disabling translations simply disables any IO related actions that would occur normally, like building or looking up translations when __() methods are called.
+
 ## Development
-Welcome, %{person_name}! You're all ready to go.
+
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
