@@ -18,7 +18,7 @@ module Voltron
 
           current_initiailzer = File.read voltron_initialzer_path
 
-          unless current_initiailzer.match(Regexp.new(/^# === Voltron Translate Configuration ===/))
+          unless current_initiailzer.match(Regexp.new(/# === Voltron Translate Configuration ===/))
             inject_into_file(voltron_initialzer_path, after: "Voltron.setup do |config|\n") do
 <<-CONTENT
 
