@@ -4,7 +4,6 @@ require 'voltron/config/translate'
 require 'voltron/translatable'
 require 'digest'
 require 'csv'
-require 'xxhash'
 require 'google_hash'
 
 module Voltron

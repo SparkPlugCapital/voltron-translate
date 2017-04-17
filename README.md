@@ -26,7 +26,7 @@ Then run the following to create the voltron.rb initializer (if not exists alrea
 
 ## Usage
 
-# The Double Underscore Method
+### The Double Underscore Method
 
 Voltron Translate extends ActiveRecord::Base, ActionController::Base, ActionMailer::Base, and ActionView::Base with a __ (double underscore) method that makes internationalization and/or translating static phrases easier.
 
@@ -104,7 +104,7 @@ __("User with name %{person_name} has been saved successfully.", :de, person_nam
 
 Will always look for the above translation within de.csv
 
-# Backend Translations
+### Backend Translations
 
 To add support for translations of dynamic text, i.e. - Text entered into a form, Voltron Translate adds a `translates` class method to models.
 
@@ -170,7 +170,7 @@ I18n.locale = :es
 
 Should go without saying, but to set the translation text on the frontend, you'd just create a separate form field for each locales text:
 
-```ruby
+```erb
 <%= form_for @company do |f| %>
   
   <div>
