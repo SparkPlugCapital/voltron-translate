@@ -23,7 +23,7 @@ module Voltron
           # +action_view/helpers/targs+ exist when this method is called from within
           # ActionView::Helpers. In other words, form helper tags. In that
           # case we want the actual value of the attribute, not whatever the locale is
-          return super() if caller.any? { |l| /action_view\/helpers\/tags/.match(l) }
+          return super() if caller.any? { |l| /action_view\/helpers\/tags/.match(l) } || !Voltron.config.translate.enabled?
           try(:"#{attribute}_#{locale.to_s.underscore}") || try(:"#{attribute}_#{options[:default].to_s.underscore}") || try(:"#{attribute}_#{I18n.locale.to_s.underscore}") || super()
         end
 

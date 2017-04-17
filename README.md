@@ -26,6 +26,8 @@ Then run the following to create the voltron.rb initializer (if not exists alrea
 
 ## Usage
 
+# The Double Underscore Method
+
 Voltron Translate extends ActiveRecord::Base, ActionController::Base, ActionMailer::Base, and ActionView::Base with a __ (double underscore) method that makes internationalization and/or translating static phrases easier.
 
 Once installed, from any class that extends from any of the three rails classes you can use the double underscore method to allow for real time text translation. For example:
@@ -102,11 +104,102 @@ __("User with name %{person_name} has been saved successfully.", :de, person_nam
 
 Will always look for the above translation within de.csv
 
+# Backend Translations
+
+To add support for translations of dynamic text, i.e. - Text entered into a form, Voltron Translate adds a `translates` class method to models.
+
+```ruby
+class Company < ActiveRecord::Base
+
+  # translates :attribute_name1, :attribute_name2, :attribute_name3, ..., options={}
+  translates :name, :greeting, { locales: [:en, :es, :de, :"en-GB"], default: :en }
+
+end
+```
+
+Options to the `translates` method are optional, and, if any/all or omitted, the defaults are as follows:
+
+locales -> Defaults to Voltron.config.translates.locales, which itself defaults to Rails.application.config.i18n.available_locales
+default -> nil, will just return the value of the original attribute, i.e. - "name" or "greeting"
+
+The `translates` method adds locale specific version of the attribute(s) to the model with the following methods:
+
+`<attribute>_<locale>`
+
+`<attribute>_<locale>=`
+
+`<attribute>_<locale>?`
+
+`<attribute>_<locale>_will_change!`
+
+`<attribute>_<locale>_changed?`
+
+`<attribute>_<locale>_was`
+
+In addition, it will override the `<attribute>` method with one that takes a single, optional argument: the locale you want to return the text for. Consider the following:
+
+```ruby
+# Voltron.config.translate.locales = [:en, :es, :"en-GB"]
+class Company < ActiveRecord::Base
+
+  translates :name
+
+end
+```
+
+```ruby
+@company = Company.create(name: 'Company Name', name_es: 'Spanish Company Name', name_en_gb: 'British Company Name')
+
+@company.name # Returns 'Company Name'
+@company.name(:es) # Returns 'Spanish Company Name'
+@company.name(:invalid_locale) # Returns 'Company Name', since it ultimately will fall back to the original attribute
+
+# OR, access the locale directly:
+
+@company.name_es # Returns 'Spanish Company Name'
+@company.name_en_gb # Returns 'British Company Name'
+
+# Without specifying a specific locale in either the method call or +translates+ option, it will try and base it's lookup by the value of I18n.locale
+
+I18n.locale = :en
+@company.name # Returns 'Company Name'
+
+I18n.locale = :es
+@company.name # Returns 'Spanish Company Name', since our global locale is set to :es
+```
+
+Should go without saying, but to set the translation text on the frontend, you'd just create a separate form field for each locales text:
+
+```ruby
+<%= form_for @company do |f| %>
+  
+  <div>
+    <%= f.label :name %>
+    <%= f.text_field :name %>
+  </div>
+
+  <div>
+    <%= f.label :name_es %>
+    <%= f.text_field :name_es %>
+  </div>
+
+  <div>
+    <%= f.label :name_en_gb %>
+    <%= f.text_field :name_en_gb %>
+  </div>
+
+<% end %>
+```
+
+Add the appropriate attributes to your strong params, so on, so on...
+
 ## Things to Note
 
 Setting `Voltron.config.translate.enabled` to `false` will never break any __() call, it simply causes it to ignore the locale argument (if specified) and return the interpolated string using the latter arguments (again, if any)
 
 Disabling translations simply disables any IO related actions that would occur normally, like building or looking up translations when __() methods are called.
+
+It also disables the locale specific text translation on any method call that was targeted with `translates`, meaning `@company.name(:es)` would be the equivalent of calling `@company.name`. Note that `@company.name_es` would still work as it normally would.
 
 ## Development
 
