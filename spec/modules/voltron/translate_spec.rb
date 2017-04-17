@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Voltron::Translate do
+describe Voltron::Translate, type: :module do
 
   include Voltron::Translate
 

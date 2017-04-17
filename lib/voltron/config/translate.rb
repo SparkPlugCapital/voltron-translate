@@ -12,7 +12,7 @@ module Voltron
       def initialize
         @build_environment ||= [:development]
         @enabled ||= true
-        @locales ||= [:en]
+        @locales ||= I18n.available_locales
       end
 
       def enabled?
@@ -20,7 +20,7 @@ module Voltron
       end
 
       def buildable?
-        [build_environment].flatten.map(&:to_s).include?(Rails.env.to_s)
+        Array.wrap(build_environment).map(&:to_s).include?(Rails.env.to_s)
       end
     end
   end

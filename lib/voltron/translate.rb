@@ -1,12 +1,16 @@
 require 'voltron'
 require 'voltron/translate/version'
 require 'voltron/config/translate'
+require 'voltron/translatable'
 require 'digest'
 require 'csv'
+require 'xxhash'
 require 'google_hash'
 
 module Voltron
   module Translate
+
+    class InvalidColumnTypeError < StandardError; end
 
     def __(text, locale = I18n.locale, **args)
       return (text % args) unless Voltron.config.translate.enabled?
@@ -143,4 +147,4 @@ module Voltron
   end
 end
 
-require 'voltron/translate/railtie' if defined?(Rails)
+require 'voltron/translate/engine' if defined?(Rails)
