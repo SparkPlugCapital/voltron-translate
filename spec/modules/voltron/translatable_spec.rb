@@ -1,4 +1,4 @@
-require 'rails_helper'
+require 'spec_helper'
 
 describe Voltron::Translatable, type: :module do
 
@@ -6,6 +6,8 @@ describe Voltron::Translatable, type: :module do
 
   before(:each) do
     Voltron.config.translate.locales = [:en, :es, :de, :"en-GB"]
+    I18n.locale = :en
+    company.class.translates :name, default: nil
   end
 
   it 'should have a translates class method' do

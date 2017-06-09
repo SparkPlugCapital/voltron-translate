@@ -1,28 +1,34 @@
+[![Coverage Status](https://coveralls.io/repos/github/ehainer/voltron-translate/badge.svg?branch=master)](https://coveralls.io/github/ehainer/voltron-translate?branch=master)
 [![Build Status](https://travis-ci.org/ehainer/voltron-translate.svg?branch=master)](https://travis-ci.org/ehainer/voltron-translate)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
 # Voltron::Translate
 
-Voltron Translate is a different, in my mind more logical way of dealing with internationalization in rails, largely inspired by the Magento framework's __() method.
+Voltron Translate is a different, in my mind more logical way of dealing with internationalization in rails, largely inspired by the Magento framework's `__()` helper method.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'voltron-translate'
+gem 'voltron-translate', '~> 0.2.1'
 ```
 
 And then execute:
 
-    $ bundle
+    $ bundle install
 
 Or install it yourself as:
 
     $ gem install voltron-translate
 
-Then run the following to create the voltron.rb initializer (if not exists already) and add the translate config:
+Then run the following to create the voltron.rb initializer (if not exists already), add the translate config, and generate the database migration:
 
     $ rails g voltron:translate:install
+
+Then run the migrations to add the table to support backend translations:
+
+    $ bundle exec rake db:migrate
 
 ## Usage
 
@@ -30,7 +36,7 @@ Then run the following to create the voltron.rb initializer (if not exists alrea
 
 Voltron Translate extends ActiveRecord::Base, ActionController::Base, ActionMailer::Base, and ActionView::Base with a __ (double underscore) method that makes internationalization and/or translating static phrases easier.
 
-Once installed, from any class that extends from any of the three rails classes you can use the double underscore method to allow for real time text translation. For example:
+Once installed, from any class that extends from any of the four rails classes listed you can use the double underscore method to allow for text translation. For example:
 
 ```ruby
 @user = User.new(user_params)
@@ -117,10 +123,12 @@ class Company < ActiveRecord::Base
 end
 ```
 
-Options to the `translates` method are optional, and, if any/all or omitted, the defaults are as follows:
+Options to the `translates` method are optional, details of which are:
 
-locales -> Defaults to Voltron.config.translates.locales, which itself defaults to Rails.application.config.i18n.available_locales
-default -> nil, will just return the value of the original attribute, i.e. - "name" or "greeting"
+| Option  | Default                                                                                                                       | Comment                                                                                                                                                                                                                                                                            |
+|---------|-------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| locales | `Voltron.config.translates.locales`, whose default is actually the value of `Rails.application.config.i18n.available_locales` | Should be an array of locale names, as strings or symbols. Each locale defined will extend the original attribute to make locale specific methods. i.e. - Locales `[:en, :es]` on attribute `name` would generate methods for `name_en`, `name_es`, `name_en=`, `name_es=`, etc... |
+| default | nil                                                                                                                           | Should be a string or symbol of the default locale you'd like to use. This default overrides the value of `I18n.locale`, so should really only be used if the attribute in question needs to default to a different language.                                                      |
 
 The `translates` method adds locale specific version of the attribute(s) to the model with the following methods:
 
@@ -193,11 +201,11 @@ Should go without saying, but to set the translation text on the frontend, you'd
 
 Add the appropriate attributes to your strong params, so on, so on...
 
-## Things to Note
+## Note
 
-Setting `Voltron.config.translate.enabled` to `false` will never break any __() call, it simply causes it to ignore the locale argument (if specified) and return the interpolated string using the latter arguments (again, if any)
+Setting `Voltron.config.translate.enabled` to `false` will never break any `__()` call, it simply causes it to ignore the locale argument (if specified) and return the interpolated string using the latter arguments (again, if any)
 
-Disabling translations simply disables any IO related actions that would occur normally, like building or looking up translations when __() methods are called.
+Disabling translations simply disables any IO related actions that would occur normally, like building or looking up translations when `__()` methods are called.
 
 It also disables the locale specific text translation on any method call that was targeted with `translates`, meaning `@company.name(:es)` would be the equivalent of calling `@company.name`. Note that `@company.name_es` would still work as it normally would.
 
@@ -211,5 +219,4 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/ehaine
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
+The gem is available as open source under the terms of the [GNU General Public License](https://www.gnu.org/licenses/gpl-3.0.en.html).

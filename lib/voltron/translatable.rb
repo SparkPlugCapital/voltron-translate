@@ -7,60 +7,62 @@ module Voltron
       options = (attributes.extract_options!).with_indifferent_access
       locales = Array.wrap(options[:locales] || Voltron.config.translate.locales).map(&:to_s).map(&:underscore)
 
-      attributes.each do |attribute|
+      attributes.each do |attrib|
 
-        column = self.columns_hash[attribute.to_s]
+        column = self.columns_hash[attrib.to_s]
 
-        raise ::ActiveRecord::UnknownAttributeError.new(self.new, attribute) if column.nil?
+        raise ::ActiveRecord::UnknownAttributeError.new(self.new, attrib) if column.nil?
 
-        raise ::Voltron::Translate::InvalidColumnTypeError.new("Invalid type '#{column.type}' for attribute: #{attribute}. Translations only work on string and text attribute types.") unless [:string, :text].include?(column.type)
+        raise ::Voltron::Translate::InvalidColumnTypeError.new("Invalid type '#{column.type}' for attribute: #{attrib}. Translations only work on string and text attribute types.") unless [:string, :text].include?(column.type)
 
         # Override the attribute with a method that accepts a specific locale as an argument
         # If specified, will attempt to fetch that locale's translation, otherwise the default
         # locale specified for the attribute, and ultimately the current locale translation
         # If still nil, returns the value from super
-        define_method :"#{attribute}" do |locale=nil|
+        define_method :"#{attrib}" do |locale=nil|
           # +action_view/helpers/targs+ exist when this method is called from within
           # ActionView::Helpers. In other words, form helper tags. In that
           # case we want the actual value of the attribute, not whatever the locale is
           return super() if caller.any? { |l| /action_view\/helpers\/tags/.match(l) } || !Voltron.config.translate.enabled?
-          try(:"#{attribute}_#{locale.to_s.underscore}") || try(:"#{attribute}_#{options[:default].to_s.underscore}") || try(:"#{attribute}_#{I18n.locale.to_s.underscore}") || super()
+          try(:"#{attrib}_#{locale.to_s.underscore}") || try(:"#{attrib}_#{options[:default].to_s.underscore}") || try(:"#{attrib}_#{I18n.locale.to_s.underscore}") || super()
         end
 
         locales.each do |locale|
 
+          attribute :"#{attrib}_#{locale}"
+
           # Define setter, i.e. - +attribute_es=+
-          define_method :"#{attribute}_#{locale}=" do |val|
-            attribute_will_change! "#{attribute}_#{locale}"
-            instance_variable_set("@#{attribute}_#{locale}", val)
+          define_method :"#{attrib}_#{locale}=" do |val|
+            attribute_will_change! "#{attrib}_#{locale}"
+            instance_variable_set("@#{attrib}_#{locale}", val)
           end
 
           # Define getter, i.e - +attribute_es+
           # If nil, calling this method will attempt to fetch the value
           # We do this to avoid preloading the translations association records
-          define_method :"#{attribute}_#{locale}" do
-            if instance_variable_get("@#{attribute}_#{locale}").nil?
-              instance_variable_set("@#{attribute}_#{locale}", send(:"#{attribute}_#{locale}_was"))
+          define_method :"#{attrib}_#{locale}" do
+            if instance_variable_get("@#{attrib}_#{locale}").nil?
+              instance_variable_set("@#{attrib}_#{locale}", send(:"#{attrib}_#{locale}_was"))
             end
-            instance_variable_get("@#{attribute}_#{locale}")
+            instance_variable_get("@#{attrib}_#{locale}")
           end
 
           # Define the changed? method, i.e. - +attribute_es_changed?+
-          define_method :"#{attribute}_#{locale}_changed?" do
-            changed.include?("#{attribute}_#{locale}")
+          define_method :"#{attrib}_#{locale}_changed?" do
+            changed.include?("#{attrib}_#{locale}")
           end
 
           # Define the was method, i.e. - +attribute_es_was+
-          define_method :"#{attribute}_#{locale}_was" do
-            translations.find_by(attribute_name: attribute, locale: locale).try(:translation)
+          define_method :"#{attrib}_#{locale}_was" do
+            translations.find_by(attribute_name: attrib, locale: locale).try(:translation)
           end
 
-          define_method :"#{attribute}_#{locale}_will_change!" do
-            attribute_will_change! "#{attribute}_#{locale}"
+          define_method :"#{attrib}_#{locale}_will_change!" do
+            attribute_will_change! "#{attrib}_#{locale}"
           end
 
-          define_method :"#{attribute}_#{locale}?" do
-            instance_variable_get("@#{attribute}_#{locale}").present?
+          define_method :"#{attrib}_#{locale}?" do
+            instance_variable_get("@#{attrib}_#{locale}").present?
           end
 
         end
