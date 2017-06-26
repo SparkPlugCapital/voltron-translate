@@ -41,5 +41,5 @@ Rails.application.configure do
 
   config.i18n.enforce_available_locales = false
   
-  config.i18n.available_locales = [:en, :es, :de, :"en-GB"]
+  config.i18n.available_locales = [:en, :de]
 end

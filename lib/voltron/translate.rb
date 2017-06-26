@@ -5,9 +5,12 @@ require 'voltron/translatable'
 require 'digest'
 require 'csv'
 require 'google_hash'
+require 'xxhash'
 
 module Voltron
   module Translate
+
+    LOG_COLOR = :light_blue
 
     class InvalidColumnTypeError < StandardError; end
 
@@ -26,7 +29,7 @@ module Voltron
         translator(locale).translate text, **args
       rescue => e
         # If any errors occurred, log the error and just return the default interpolated text
-        Voltron.log e.message.to_s + " (Original Translation Text: #{text})", 'Translate', :light_red
+        Voltron.log e.message.to_s + " (Original Translation Text: #{text})", 'Translate', ::Voltron::Translate::LOG_COLOR
         text % args
       end
     end
@@ -61,7 +64,7 @@ module Voltron
         # If the full list of translations does not contain the given text content, add it
         unless full_list.has_key?(text)
           CSV.open(path, 'a', force_quotes: true) { |f| f.puts [text, text] }
-          Voltron.log "Added translation for text '#{text}' (Locale: #{locale})", 'Translate', :light_blue
+          Voltron.log "Added translation for text '#{text}' (Locale: #{locale})", 'Translate', ::Voltron::Translate::LOG_COLOR
         end
       end
 
@@ -139,7 +142,7 @@ module Voltron
         end
 
         def phrase_key(text, args)
-          key = Digest::SHA256.hexdigest text + args.map { |k,v| "#{k}#{v}" }.join
+          key = XXhash.xxh32(text + args.map { |k,v| "#{k}#{v}" }.join)
           "translations/phrase/#{key}/#{locale}/#{modified}"
         end
     end

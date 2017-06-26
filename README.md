@@ -201,6 +201,10 @@ Should go without saying, but to set the translation text on the frontend, you'd
 
 Add the appropriate attributes to your strong params, so on, so on...
 
+## Caching
+
+This gem relies on being able to cache translations for quicker lookup. While not a requirement, some sort of cache mechanism is highly recommended as you will notice a difference in page load time. Using [redis-rails](https://github.com/redis-store/redis-rails) or something similar is the most preferred method of caching, but even [FileStore](http://guides.rubyonrails.org/caching_with_rails.html#activesupport-cache-filestore) is better than nothing.
+
 ## Note
 
 Setting `Voltron.config.translate.enabled` to `false` will never break any `__()` call, it simply causes it to ignore the locale argument (if specified) and return the interpolated string using the latter arguments (again, if any)

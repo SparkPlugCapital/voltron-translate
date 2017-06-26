@@ -5,7 +5,7 @@ module Voltron
       include InstanceMethods
 
       options = (attributes.extract_options!).with_indifferent_access
-      locales = Array.wrap(options[:locales] || Voltron.config.translate.locales).map(&:to_s).map(&:underscore)
+      locales = Array.wrap(options[:locales] || Voltron.config.translate.locales).map { |l| l.to_s.underscore }
 
       attributes.each do |attrib|
 
@@ -20,7 +20,7 @@ module Voltron
         # locale specified for the attribute, and ultimately the current locale translation
         # If still nil, returns the value from super
         define_method :"#{attrib}" do |locale=nil|
-          # +action_view/helpers/targs+ exist when this method is called from within
+          # +action_view/helpers/tags+ exist when this method is called from within
           # ActionView::Helpers. In other words, form helper tags. In that
           # case we want the actual value of the attribute, not whatever the locale is
           return super() if caller.any? { |l| /action_view\/helpers\/tags/.match(l) } || !Voltron.config.translate.enabled?

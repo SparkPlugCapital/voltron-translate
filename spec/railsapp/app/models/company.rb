@@ -4,6 +4,4 @@ class Company < ActiveRecord::Base
   
   translates :greeting
 
-  default_scope { joins(:translations).includes(:translations) }
-
 end

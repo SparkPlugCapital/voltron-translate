@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rails', '>= 4.2'
   spec.add_dependency 'voltron', '~> 0.2.4'
   spec.add_dependency 'google_hash', '>= 0.9.0'
+  spec.add_dependency 'xxhash', '~> 0.4.0'
 
   spec.add_development_dependency 'bundler', '>= 1.12'
   spec.add_development_dependency 'rake', '>= 10.0'
@@ -29,5 +30,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'sqlite3', '>= 1.2'
   spec.add_development_dependency 'simplecov', '0.11.0'
   spec.add_development_dependency 'factory_girl_rails', '>= 4.7'
-  spec.add_development_dependency 'byebug'
 end
