@@ -11,7 +11,7 @@ Voltron Translate is a different, in my mind more logical way of dealing with in
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'voltron-translate', '~> 0.2.1'
+gem 'voltron-translate', '~> 0.2.2'
 ```
 
 And then execute:
