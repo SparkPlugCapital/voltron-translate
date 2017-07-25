@@ -22,7 +22,7 @@ module Voltron
 
         # If app is running in one of the environments where translations can be created
         if Voltron.config.translate.buildable?
-          Voltron.config.translate.locales.each { |locale| translator(locale).write text }
+          Array.wrap(Voltron.config.translate.locales).compact.each { |locale| translator(locale).write text }
         end
 
         # Translate the text and return it
