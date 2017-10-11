@@ -14,32 +14,32 @@ module Voltron
 
     class InvalidColumnTypeError < StandardError; end
 
-    def __(text, locale = I18n.locale, **args)
-      return (text % args) unless Voltron.config.translate.enabled?
+    def _(locale = I18n.locale, **args)
+      return (self % args) if !Voltron.config.translate.enabled? || self.blank?
 
       begin
         raise 'Locale can only contain the characters A-Z, and _' unless locale.to_s =~ /^[A-Z_]+$/i
 
         # If app is running in one of the environments where translations can be created
         if Voltron.config.translate.buildable?
-          Array.wrap(Voltron.config.translate.locales).compact.each { |locale| translator(locale).write text }
+          Array.wrap(Voltron.config.translate.locales).compact.each { |locale| translator(locale).write self }
         end
 
         # Translate the text and return it
-        translator(locale).translate text, **args
+        translator(locale).translate self, **args
       rescue => e
         # If any errors occurred, log the error and just return the default interpolated text
-        Voltron.log e.message.to_s + " (Original Translation Text: #{text})", 'Translate', ::Voltron::Translate::LOG_COLOR
-        text % args
+        Voltron.log e.message.to_s + " (Original Translation Text: #{self})", 'Translate', ::Voltron::Translate::LOG_COLOR
+        self % args
       end
     end
 
     def translator(locale = I18n.locale)
       @translators ||= {}
-      @translators[locale.to_s] ||= Translation.new(locale)
+      @translators[locale.to_s] ||= Translator.new(locale)
     end
 
-    class Translation
+    class Translator
 
       attr_accessor :locale
 
