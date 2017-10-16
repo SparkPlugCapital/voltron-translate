@@ -34,7 +34,7 @@ Then run the migrations to add the table to support backend translations:
 
 ### The Double Underscore Method
 
-Voltron Translate extends ActiveRecord::Base, ActionController::Base, ActionMailer::Base, and ActionView::Base with a __ (double underscore) method that makes internationalization and/or translating static phrases easier.
+Voltron Translate extends the ruby String class with a _ (single underscore) method that makes internationalization and/or translating static phrases easier.
 
 Once installed, from any class that extends from any of the four rails classes listed you can use the double underscore method to allow for text translation. For example:
 
@@ -42,9 +42,9 @@ Once installed, from any class that extends from any of the four rails classes l
 @user = User.new(user_params)
 
 if @user.save
-  redirect_to @user, notice: __("User has been saved successfully.")
+  redirect_to @user, notice: "User has been saved successfully."._
 else
-  flash.now[:alert] = __("User could not be saved.")
+  flash.now[:alert] = "User could not be saved."._
   render :new
 end
 ```
@@ -55,9 +55,9 @@ or to use interpolation to support dynamic phrases:
 @user = User.new(user_params)
 
 if @user.save
-  redirect_to @user, notice: __("User with name %{person_name} has been saved successfully.", person_name: @user.name)
+  redirect_to @user, notice: "User with name %{person_name} has been saved successfully."._(person_name: @user.name)
 else
-  flash.now[:alert] = __("User with name %{person_name} could not be saved.", person_name: [user_params[:first_name], user_params[:last_name]].join(" "))
+  flash.now[:alert] = "User with name %{person_name} could not be saved."._(person_name: [user_params[:first_name], user_params[:last_name]].join(" "))
   render :new
 end
 ```
@@ -78,15 +78,15 @@ Changing it to this:
 "User with name %{person_name} has been saved successfully.","Welcome, %{person_name}! You're all ready to go."
 ```
 
-Will cause any instance of `__("User with name %{person_name} has been saved successfully.", person_name: "Carl")` to output `Welcome, Carl! You're all ready to go.`
+Will cause any instance of `"User with name %{person_name} has been saved successfully."._(person_name: "Carl")` to output `Welcome, Carl! You're all ready to go.`
 
-Note that if a phrase does not exist in the CSV, you can always add it manually just so long as it matches exactly the text contained within the first argument of a __("") method. Voltron Translate uses `Voltron.config.translate.build_environment` to determine what environments it's allowed to auto-generate translations for, but it only writes to locale files whenever a __() is actually reached. Consider:
+Note that if a phrase does not exist in the CSV, you can always add it manually just so long as it matches exactly the text that `_` is called on. Voltron Translate uses `Voltron.config.translate.build_environment` to determine what environments it's allowed to auto-generate translations for, but it only writes to locale files whenever a '_' is actually reached. Consider:
 
 ```ruby
 if 1 == 1
-  __("Hello World")
+  "Hello World"._
 else
-  __("Goodbye World")
+  "Goodbye World"._
 end
 ```
 
@@ -102,10 +102,10 @@ Then consider changing your if condition to something a little less absurd so th
 
 By default, the file Voltron Translate will pull the translations from is determined by the value of `I18n.locale` If you set the value to `:de` it will look for translations in de.csv
 
-If you need a specific __() call to use a specific locale, you may specify it as the second argument:
+If you need a specific `_` call to use a specific locale, you may specify it as the first argument:
 
 ```ruby
-__("User with name %{person_name} has been saved successfully.", :de, person_name: @user.name)
+"User with name %{person_name} has been saved successfully."._(:de, person_name: @user.name)
 ```
 
 Will always look for the above translation within de.csv
