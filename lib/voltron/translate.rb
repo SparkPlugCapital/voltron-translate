@@ -45,6 +45,8 @@ module Voltron
 
       def initialize(locale)
         @locale = locale.to_s
+        @@list ||= {}
+        @@full_list ||= {}
       end
 
       def translate(text, **args)
@@ -72,7 +74,7 @@ module Voltron
       # since that would just be unnecessarily inflating the size of the hash
       def list
         reload if has_been_modified?
-        @@list ||= begin
+        @@list[locale] ||= begin
           hsh = ::GoogleHashDenseRubyToRuby.new
           data.each { |k,v| hsh[k] = v unless k == v }
           hsh
@@ -83,7 +85,7 @@ module Voltron
       # and the value is the translated text
       def full_list
         reload if has_been_modified?
-        @@full_list ||= begin
+        @@full_list[locale] ||= begin
           hsh = ::GoogleHashDenseRubyToRuby.new
           data.each { |k,v| hsh[k] = v }
           hsh
@@ -126,8 +128,8 @@ module Voltron
 
         # Reset the list and full list objects, so they are forced to load the new data
         def reload
-          @@list = nil
-          @@full_list = nil
+          @@list = {}
+          @@full_list = {}
         end
 
         def has_been_modified?
